@@ -1,8 +1,14 @@
 import Controller from './Controller.class.js';
-
+import bcrypt from 'bcrypt';
+const SALT_ROUNDS = 13;
 
 class UserController extends Controller
 {
+    static #instance;
+    static {
+        this.#instance = new UserController();
+    }
+
     constructor()
     {
         super();
@@ -10,7 +16,15 @@ class UserController extends Controller
 
     async addUser(req, res)
     {
-        this.db.collection("users").insertOne({username:req.body.username});
+        const passwordHash = await bcrypt.hash(req.body.password, SALT_ROUNDS);
+        delete req.body.password;
+        const newUser = await this.db.collection('users').insertOne({...req.body, passwordHash});
+        res.json(newUser);
+    }
+
+    static getInstance()
+    {
+        return this.#instance;
     }
 }
 

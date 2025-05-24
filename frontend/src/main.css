@@ -1,0 +1,17 @@
+html, body, #root {
+    height: 100%;
+    margin: 0;
+}
+
+.full-height-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fill-remaining {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}

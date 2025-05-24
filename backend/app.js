@@ -7,7 +7,10 @@ app.use(express.json());
 app.use(cors());
 
 import sitesRouter from './routes/sites.js';
+import usersRouter from './routes/users.js';
+
 app.use('/sites', sitesRouter);
+app.use('/users', usersRouter);
 
 
 export default app;

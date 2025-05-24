@@ -3,13 +3,18 @@ import 'react-leaflet-markercluster/styles';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { useState, useEffect } from 'react';
-import Icon from './Icon.jsx'
+import {Row, Col, Container} from 'react-bootstrap';
 import axios from 'axios';
+import MapComponent from "./MapComponent.jsx";
+import DetailsComponent from "./DetailsComponent.jsx";
+
 import './map.css';
+
 
 
 function Map() {
     const [sites, setSites] = useState([]);
+    const [site, setSite] = useState(null);
 
     useEffect(()=>{
         const fetchData = async () => {
@@ -21,41 +26,20 @@ function Map() {
         });
     },[]);
 
-    const markers = [];
-    sites.forEach((site, index)=>{
-        if(site.latitude && site.longitude) {
-            markers.push(
-                <Marker
-                    key={index}
-                    icon={Icon(site)}
-                    onclick={(e) => {
-                        console.log(e);
-                        console.log(site);
-                        console.log("Hello world");
-                    }}
-                    position={[site.latitude, site.longitude]}/>
-            );
-        }
-    });
+
 
 
     return (
-        <MapContainer
-            className="markercluster-map"
-            center={[53.5, -7.3]}
-            zoom={8}
-        >
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <MarkerClusterGroup
-                showCoverageOnHover={false}
-                disableClusteringAtZoom={16}
-            >
-                {markers}
-            </MarkerClusterGroup>
-        </MapContainer>
+        <div className="map-wrapper">
+            <Row className="h-100 gx-0"> {/* gx-0 removes gutters */}
+                <Col md={2} className="bg-light d-none d-md-block">
+                    <DetailsComponent site={site}/>
+                </Col>
+                <Col className="h-100">
+                    <MapComponent sites={sites} setSite={setSite} />
+                </Col>
+            </Row>
+        </div>
     );
 }
 
