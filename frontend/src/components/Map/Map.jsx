@@ -1,11 +1,11 @@
 import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-markercluster/styles';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { useState, useEffect } from 'react';
 import Icon from './Icon.jsx'
-
 import axios from 'axios';
+import './map.css';
 
 
 function Map() {
