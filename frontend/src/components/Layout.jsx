@@ -1,10 +1,33 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-
+import {client} from "../tools/AxiosInterceptor.js";
 
 function Layout()
 {
+    const loginData = localStorage.getItem("user");
+
+    const userSections = [];
+    //const linkSections = [];
+
+    const logout = (e)=>{
+        e.preventDefault();
+        client.clearTokens();
+        window.location.reload();
+    }
+
+    if(loginData)
+    {
+        const user = JSON.parse(loginData);
+        userSections.push(<Link to="/account"  className="nav-link"  key="2">Account</Link> );
+        userSections.push(<Link to="#" key="1" className="nav-link" onClick={logout}>Logout ({user.username})</Link>);
+    }
+    else
+    {
+        userSections.push(<Link key="1" to="/register" className="nav-link">Register</Link>);
+        userSections.push(<Link key="2" to="/login" className="nav-link">Login</Link>);
+    }
+
     return ( <div className="container-fluid full-height-layout">
         <header>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -15,6 +38,9 @@ function Layout()
                         <Nav className="me-auto">
                             <Link to="/" className="nav-link">Home</Link>
                             <Link to="/map" className="nav-link">Map</Link>
+                        </Nav>
+                        <Nav className="ml-auto">
+                            {userSections}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

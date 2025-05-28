@@ -1,7 +1,9 @@
 import Controller from './Controller.class.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import conf from '../../conf.js'
 const SALT_ROUNDS = 14;
+
 
 class UserController extends Controller {
     static #instance;
@@ -56,7 +58,6 @@ class UserController extends Controller {
             let user = await this.confirmUserId(req.body.username, req.body.password);
             delete user.passwordHash;
             const userToken = Object.assign({}, user);
-
             const accessToken = jwt.sign(userToken,conf.express.jwt.secret,{expiresIn: '1m'});
             const refreshToken = jwt.sign(userToken, conf.express.jwt.secret, {expiresIn: '1d'});
             res.status(200).json({login: true, accessToken, refreshToken, user:userToken});

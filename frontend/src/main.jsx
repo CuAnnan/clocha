@@ -6,6 +6,9 @@ import Layout from './components/Layout.jsx';
 import Map from './components/Map/Map.jsx';
 import Index from './components/Index/Index.jsx';
 import Register from './components/Account/Register.jsx';
+import Login from './components/Account/Login.jsx';
+
+import ProtectedRoutes from './ProtectedRoutes.jsx';
 
 import './main.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -18,7 +21,10 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/" element={<Layout />}>
                     <Route path="/" element={<Index/>}/>
                     <Route path="/map" element={<Map />}/>
-                    <Route path="/account/register" element={<Register/>}/>
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route element={<ProtectedRoutes/>}>
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
