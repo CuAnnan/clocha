@@ -3,15 +3,18 @@ import React from 'react';
 
 function Details({site})
 {
+    let details = null;
     if(site)
     {
-        return (<Container fluid>
+        details = (<Container fluid>
             <Row>
                 <Col>{site.townland_name} - {site.classdesc}</Col>
             </Row>
         </Container>);
     }
-    return '';
+    return <>
+        {details}
+    </>;
 }
 
 export default React.memo(Details);

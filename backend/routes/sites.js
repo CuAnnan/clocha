@@ -9,4 +9,8 @@ router.get('/', function (req, res, next) {
     controller.getGeoJSONByDate(req, res).catch(next);
 });
 
+router.get('/sinceUpdate/:lastUpdated?', function (req, res, next) {
+    controller.getGeoJSONByDate(req, res).catch(next);
+});
+
 export default router;
