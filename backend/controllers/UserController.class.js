@@ -20,7 +20,7 @@ class UserController extends Controller {
         const userNotFoundError = "Username or password incorrect";
 
         return new Promise(async (resolve, reject)=>{
-            const user = await this.db.collection('users').findOne({username});
+            const user = await this.db.collection('users').findOne({username, confirmed:true});
             if(!user)
             {
                 reject(userNotFoundError);1

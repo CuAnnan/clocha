@@ -26,11 +26,7 @@ class POILoader
             this.#db = evt.target.result;
             this.#types = {};
             await this.#syncIndexedDB();
-            const allSites = await this.#getPOIFromIndexedDB({});
-            for(const site of allSites)
-            {
-                this.#types[site.type] = site.type;
-            }
+            await this.#getPOIFromIndexedDB({});
         };
         request.onupgradeneeded = (evt)=>{
             this.#db = evt.target.result;
@@ -60,9 +56,10 @@ class POILoader
                 const getAll = objectStore.getAll();
                 getAll.onsuccess = (evt)=>{
                     const results = evt.target.result;
+                    let POI = [];
                     if(type || county)
                     {
-                        resolve(results.filter(
+                        POI = (results.filter(
                             (site)=> {
                                 if(type && !site.classdesc.matches)
                                 {
@@ -78,8 +75,23 @@ class POILoader
                     }
                     else
                     {
-                        resolve(results);
+                        POI = results;
                     }
+                    const sites=[];
+                    for(let site of POI)
+                    {
+                        this.#types[site.type] = site.type;
+                        site.cluster = false;
+                        sites.push({
+                            type: 'Feature',
+                            properties: site,
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [site.longitude, site.latitude, 0]
+                            }
+                        });
+                    }
+                    resolve(sites);
                 }
                 getAll.onerror = (evt)=>{
                     reject(evt);

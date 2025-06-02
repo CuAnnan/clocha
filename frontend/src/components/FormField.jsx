@@ -1,6 +1,6 @@
 import {InputGroup, Col, Form} from 'react-bootstrap';
 
-function FormField({field, setField, type, id, label, inputGroupPrefix, inputGroupSuffix, errors})
+function FormField({field, setField, type, id, label, inputGroupPrefix, inputGroupSuffix, errors, disabled})
 {
     let inputGroupPrefixElement=inputGroupPrefix?(<InputGroup.Text>{inputGroupPrefix}</InputGroup.Text>):null;
     let inputGroupSuffixElement = inputGroupSuffix?(<InputGroup.Text>{inputGroupSuffix}</InputGroup.Text>):null;
@@ -21,7 +21,7 @@ function FormField({field, setField, type, id, label, inputGroupPrefix, inputGro
     const formControl = type ==='textarea'?<Form.Control id={id} required as="textarea" value={field} onChange={(e) => {
         let value = e.target.value;
         setField(value);
-    }}/>:<Form.Control id={id} required type={type?type:"text"} value={field} onChange={(e) => {
+    }}/>:<Form.Control disabled={disabled} id={id} required type={type?type:"text"} value={field} onChange={(e) => {
         let value = e.target.value;
         setField(value);
     }}/>;

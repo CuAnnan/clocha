@@ -8,3 +8,32 @@
   display: flex;
   flex-direction: column;
 }
+
+/*.cluster-marker*/
+/*{*/
+/*  background-color: #66C547;*/
+/*  border-radius:50%;*/
+/*  width: 30px;*/
+/*  height: 30px;*/
+/*}*/
+
+.cluster-marker {
+  background-color: #66C547;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+  font-size: 0.9em;
+  transition: transform 0.2s ease;
+  pointer-events: auto;
+}
+
+.cluster-marker:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}

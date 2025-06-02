@@ -19,7 +19,9 @@
     "react-leaflet": "^5.0.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
     "react-router": "^7.6.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.6.0",
+    "supercluster": "^8.0.1",
+    "use-supercluster": "^1.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

@@ -2,15 +2,16 @@ import {Col, Container, Form, Row, Button} from "react-bootstrap";
 import React from 'react';
 import FormField from '../FormField.jsx';
 import {client} from "../../tools/AxiosInterceptor.js";
-import accountValidator from "./accountValidator.js";
+import accountValidator from './accountValidator.js';
 
-function Register()
+function Account()
 {
-    const [username, setUsername] = React.useState("");
+    const user = client.user;
+
     const [password, setPassword] = React.useState("");
     const [passwordConfirmation, setPasswordConfirmation] = React.useState('');
-    const [email, setEmail] = React.useState("");
-    const [displayName, setDisplayName] = React.useState("");
+    const [email, setEmail] = React.useState(user.email);
+    const [displayName, setDisplayName] = React.useState(user.displayName);
     const [validated, setValidated] = React.useState(false);
     const [errors, setErrors] = React.useState([]);
 
@@ -25,7 +26,7 @@ function Register()
 
         try
         {
-            await client.post('/users/register', {username, password, passwordConfirmation, email, displayName}, {headers: {'Content-Type': 'application/json'}});
+            await client.patch('/users/account', {username, password, passwordConfirmation, email, displayName}, {headers: {'Content-Type': 'application/json'}});
             setErrors([]);
             setValidated(true);
         }
@@ -47,7 +48,7 @@ function Register()
         <h2 className="text-center">New Account Registration</h2>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Row className="mb-3">
-                <FormField id="username" field={username} setField={setUsername} label="Username" inputGroupPrefix="&#128100;"/>
+                <FormField id="username" field={user.username} disabled label="Username" inputGroupPrefix="&#128100;"/>
             </Row>
             <Row className="mb-3">
                 <FormField id="displayName" field={displayName} setField={setDisplayName} label="Display name" inputGroupPrefix="&#128100;"/>
@@ -73,4 +74,4 @@ function Register()
     </Container>);
 }
 
-export default Register;
+export default Account;

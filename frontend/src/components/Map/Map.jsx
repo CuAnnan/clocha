@@ -2,9 +2,11 @@ import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-markercluster/styles';
 import { useState, useEffect } from 'react';
 import {Row, Col} from 'react-bootstrap';
+
 import MapComponent from "./MapComponent.jsx";
 import DetailsComponent from "./DetailsComponent.jsx";
 import FilterComponent from "./FilterComponent.jsx";
+import UploadComponent from "./UploadComponent.jsx";
 
 import POILoader from "../../tools/POILoader.js";
 
@@ -18,8 +20,6 @@ function Map() {
     const [siteTypes, setSiteTypes] = useState([]);
 
     useEffect(()=>{
-
-
         const fetchData = async () => {
             const updatedSites = await POILoader.fetchPOI({});
             setSites(updatedSites);
@@ -36,6 +36,7 @@ function Map() {
                 <Col md={2} className="bg-light d-none d-md-block">
                     <FilterComponent siteTypes={siteTypes}/>
                     <DetailsComponent site={site}/>
+                    <UploadComponent site={site}/>
                 </Col>
                 <Col className="h-100">
                     <MapComponent sites={sites} setSite={setSite} />

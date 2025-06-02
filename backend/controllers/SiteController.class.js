@@ -43,6 +43,15 @@ class SiteController extends Controller
         res.json({sites, queryDuration, count});
     }
 
+    async handleImageUpload(req, res)
+    {
+        const files = req.files;
+        const site = JSON.parse(req.body.site);
+
+        console.log(site);
+        res.json({"Doing stuff":true});
+    }
+
 
     static getInstance()
     {

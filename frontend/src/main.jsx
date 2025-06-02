@@ -7,6 +7,7 @@ import Map from './components/Map/Map.jsx';
 import Index from './components/Index/Index.jsx';
 import Register from './components/Account/Register.jsx';
 import Login from './components/Account/Login.jsx';
+import Account from './components/Account/Account.jsx';
 
 import ProtectedRoutes from './ProtectedRoutes.jsx';
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')).render(
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route element={<ProtectedRoutes/>}>
+                        <Route path="/account" element={<Account/>}/>
                     </Route>
                 </Route>
             </Routes>
