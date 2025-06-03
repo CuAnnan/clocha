@@ -17,6 +17,8 @@ function Map() {
     const [site, setSite] = useState(null);
     const [siteTypes, setSiteTypes] = useState([]);
     const [typeFilters, setTypeFilters] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [mapInstance, setMapInstance] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -31,21 +33,27 @@ function Map() {
         });
     }, []);
 
-    const filteredSites =  typeFilters.length > 0
+    let filteredSites =  typeFilters.length > 0
         ? sites.filter(site => {
             return typeFilters.includes(site.properties.type)
         }) // Adjust 'site.type' if needed
         : sites;
+    filteredSites = searchText?filteredSites.filter(site=>{
+        return (
+            site.properties.townland_name.toLowerCase().includes(searchText.toLowerCase()) ||
+            site.properties.smrs.toLowerCase().includes(searchText.toLowerCase())
+        );
+    }):filteredSites;
 
     return (
         <div className="map-wrapper">
             <Row className="h-100 gx-0"> {/* gx-0 removes gutters */}
-                <Col md={2} className="bg-light d-none d-md-block accordion">
-                    <Accordion defaultActiveKey="0">
+                <Col xs={12} lg={2} className="bg-light d-none d-md-block accordion">
+                    <Accordion defaultActiveKey="1">
                         <Accordion.Item eventKey="0">
-                            <Accordion.Header>Filters</Accordion.Header>
+                            <Accordion.Header>Filters ({typeFilters.length})</Accordion.Header>
                             <Accordion.Body>
-                                <FilterComponent siteTypes={siteTypes} typeFilters={typeFilters} setTypeFilters={setTypeFilters} />
+                                <FilterComponent setSite={setSite} mapInstance={mapInstance} siteTypes={siteTypes} sites={sites} typeFilters={typeFilters} setTypeFilters={setTypeFilters} searchText={searchText} setSearchText={setSearchText} />
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey="1">
@@ -62,8 +70,8 @@ function Map() {
                         </Accordion.Item>
                     </Accordion>
                 </Col>
-                <Col className="h-100">
-                    <MapComponent sites={filteredSites} setSite={setSite} />
+                <Col xs={12} lg={10} className="h-100">
+                    <MapComponent site={site} mapInstance={mapInstance} setMapInstance={setMapInstance} sites={filteredSites} setSite={setSite} />
                 </Col>
             </Row>
         </div>

@@ -5,13 +5,12 @@ import L from 'leaflet';
 function createRotatedIcon(heading, zoom) {
     const maxZoom = 19;
     const minZoom = 5;
-    const minSize = 12;
+    const minSize = 8;
     const maxSize = 48;
     const zoomRange = maxZoom - minZoom;
     const clampedZoom = Math.min(Math.max(zoom, minZoom), maxZoom);
     const size = minSize + ((clampedZoom - 5) / zoomRange) * (maxSize - minSize);
     const halfSize = size / 2;
-    console.log(zoom, clampedZoom, size)
 
     return L.divIcon({
         html: `<div style="transform: rotate(${heading ?? 0}deg);">

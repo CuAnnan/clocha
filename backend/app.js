@@ -9,7 +9,7 @@ app.use(cors());
 import sitesRouter from './routes/sites.js';
 import usersRouter from './routes/users.js';
 
-app.use('/', function(req, res){
+app.get('/', function(req, res){
     res.json({status:"Running"});
 })
 

@@ -19,17 +19,18 @@ const iconMap = {
     'Cairn':'cairn'
 };
 
-function Icon(site)
+function Icon(site, selected=false)
 {
     const patch = iconMap[site.classdesc]?iconMap[site.classdesc]:'monument';
-    const icon = `../img/${patch}.png`;
+    const iconPath = `/img/${patch}.png`;
+    const scale = selected?1.2:1;
 
     return new L.Icon({
-        iconUrl: icon,
-        iconRetinaUrl: icon,
-        iconAnchor: [16, 37],
-        iconSize: new L.Point(32, 37)
-    })
+        iconUrl: iconPath,
+        iconRetinaUrl: iconPath,
+        iconAnchor: [16*scale, 37*scale],
+        iconSize: new L.Point(32*scale, 37*scale)
+    });
 }
 
 export default Icon;

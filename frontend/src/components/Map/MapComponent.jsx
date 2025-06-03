@@ -47,10 +47,9 @@ function MapUpdater({ setBounds, setZoom }) {
     return null;
 }
 
-function MapComponent({ sites, setSite }) {
+function MapComponent({site, sites, setSite, setMapInstance, mapInstance }) {
     const [bounds, setBounds] = useState(null);
     const [zoom, setZoom] = useState(8);
-    const [mapInstance, setMapInstance] = useState(null); // ⬅️ Store map instance
 
     const { clusters, supercluster } = useSupercluster({
         points: sites,
@@ -118,9 +117,9 @@ function MapComponent({ sites, setSite }) {
                     <Marker
                         key={`poi-${cluster.properties.smrs}`}
                         position={[latitude, longitude]}
-                        icon={Icon(cluster.properties)}
+                        icon={Icon(cluster.properties, site?.smrs===cluster.properties.smrs)}
                         eventHandlers={{
-                            click: () => {
+                            click: (e) => {
                                 setSite(cluster.properties);
                             },
                         }}

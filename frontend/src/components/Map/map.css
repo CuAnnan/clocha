@@ -9,6 +9,19 @@
   flex-direction: column;
 }
 
+.map-wrapper {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-container {
+  flex-grow: 1;
+  height: 100%; /* Ensure the map takes up available space */
+  width:100%;
+}
+
 /*.cluster-marker*/
 /*{*/
 /*  background-color: #66C547;*/

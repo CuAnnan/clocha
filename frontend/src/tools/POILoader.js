@@ -87,9 +87,13 @@ class POILoader
                     }
                     const sites=[];
                     const types = new Set();
+                    const townlands = new Set();
+                    const smrs = new Set();
                     for(let site of POI)
                     {
                         types.add(site.type);
+                        townlands.add(site.townland);
+                        smrs.add(site.smrs);
                         site.cluster = false;
                         sites.push({
                             type: 'Feature',
@@ -111,6 +115,7 @@ class POILoader
 
     }
 
+
     static getSiteTypes()
     {
         return this.#types;
@@ -127,6 +132,7 @@ class POILoader
 
     static async #syncIndexedDB() {
         const updatedSites = await this.#getUpdatedSites();
+
 
         return new Promise((resolve, reject) => {
             const transaction = this.#db.transaction(["sites"], 'readwrite');

@@ -13,7 +13,13 @@ function Details({site})
 
         details = (<Container fluid>
             <Row>
-                <Col>{site.townland_name} - {site.classdesc}</Col>
+                <Col sm="12" md="3" className="fw-bold">Townland:</Col><Col>{site.townland_name}</Col>
+            </Row>
+            <Row>
+                <Col sm="12" md="3"  className="fw-bold">Type:</Col><Col>{site.classdesc}</Col>
+            </Row>
+            <Row>
+                <Col sm="12" md="3"  className="fw-bold">SMRS:</Col><Col>{site.smrs}</Col>
             </Row>
             <Row>
                 <Col>
