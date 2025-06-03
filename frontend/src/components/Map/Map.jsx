@@ -49,7 +49,10 @@ function Map() {
         <div className="map-wrapper">
             <Row className="h-100 gx-0"> {/* gx-0 removes gutters */}
                 <Col xs={12} lg={2} className="bg-light d-none d-md-block accordion">
-                    <Accordion defaultActiveKey="1">
+                    <Accordion
+                        alwaysOpen
+                        defaultActiveKey={["0","1","2"]}
+                    >
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Filters ({typeFilters.length})</Accordion.Header>
                             <Accordion.Body>

@@ -23,12 +23,16 @@ function Icon(site, selected=false)
 {
     const patch = iconMap[site.classdesc]?iconMap[site.classdesc]:'monument';
     const iconPath = `/img/${patch}.png`;
-    const scale = selected?1.2:1;
+    const scale = selected?1.25:1;
+    const classNames = ['leaflet-marker-icon'];
+    if(selected) classNames.push('selected');
 
-    return new L.Icon({
-        iconUrl: iconPath,
-        iconRetinaUrl: iconPath,
+    return new L.divIcon({
+        html: `<div class="icon-marker leaflet-marker-icon ${selected ? 'selected' : ''}">
+           <img src="${iconPath}" />
+         </div>`,
         iconAnchor: [16*scale, 37*scale],
+        className:classNames.join(' '),
         iconSize: new L.Point(32*scale, 37*scale)
     });
 }
