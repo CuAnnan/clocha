@@ -9,6 +9,10 @@ app.use(cors());
 import sitesRouter from './routes/sites.js';
 import usersRouter from './routes/users.js';
 
+app.use('/', function(req, res){
+    res.json({status:"Running"});
+})
+
 app.use('/sites', sitesRouter);
 app.use('/users', usersRouter);
 
