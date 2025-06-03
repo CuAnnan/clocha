@@ -6,15 +6,16 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 import SiteController from "../controllers/SiteController.class.js";
+
 const controller = SiteController.getInstance();
 
 
 router.get('/', function (req, res, next) {
-    controller.getGeoJSONByDate(req, res).catch(next);
+    controller.getSitesByDateModified(req, res).catch(next);
 });
 
 router.get('/sinceUpdate/:lastUpdated?', function (req, res, next) {
-    controller.getGeoJSONByDate(req, res).catch(next);
+    controller.getSitesByDateModified(req, res).catch(next);
 });
 
 router.post(
@@ -24,6 +25,15 @@ router.post(
     function (req, res, next)
     {
         controller.handleImageUpload(req, res).catch(next);
+    }
+);
+
+router.get(
+    '/favourites',
+    controller.checkForJWTToken,
+    function (req, res, next)
+    {
+        controller.getFavourites(req, res).catch(next);
     }
 );
 

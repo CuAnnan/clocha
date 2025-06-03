@@ -13,7 +13,12 @@ class SiteController extends Controller
         super();
     }
 
-    async getGeoJSONByDate(req, res)
+    async getSiteBySMRS(smrs)
+    {
+        return await this.db.collection('sites').findOne({smrs});
+    }
+
+    async getSitesByDateModified(req, res)
     {
         let qry = {
             'type':{'$ne':null},
@@ -50,6 +55,35 @@ class SiteController extends Controller
 
         console.log(site);
         res.json({"Doing stuff":true});
+    }
+
+    async addFavourite(req, res)
+    {
+        let siteController = SiteController.getInstance();
+        let site = await siteController.getSiteBySMRS(req.body.smrs);
+
+        const qry = {
+            idUsers:req.user.id,
+            idSites:site._id
+        }
+
+        await this.db.collection('favourites').updateOne(
+            qry,
+            qry,
+            {upsert:true}
+        );
+        res.json({success:true});
+    }
+
+    async getFavourites(req, res)
+    {
+        let qry = await this.db.collection('favourites').find({idUsers:req.user.id}).project({_id:1});
+        let sites = [];
+        for await(const site of qry)
+        {
+            sites.push(site);
+        }
+        res.json({sites});
     }
 
 

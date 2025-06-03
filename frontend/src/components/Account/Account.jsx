@@ -6,21 +6,34 @@ import accountValidator from './accountValidator.js';
 
 function Account()
 {
-    const user = client.user;
-
+    const [user, setUser] = React.useState({});
     const [password, setPassword] = React.useState("");
     const [passwordConfirmation, setPasswordConfirmation] = React.useState('');
-    const [email, setEmail] = React.useState(user.email);
-    const [displayName, setDisplayName] = React.useState(user.displayName);
+    const [email, setEmail] = React.useState("");
+    const [displayName, setDisplayName] = React.useState("");
+    const [username, setUsername] = React.useState("");
     const [validated, setValidated] = React.useState(false);
     const [errors, setErrors] = React.useState([]);
+    const [submitting, setSubmitting] = React.useState(false);
+
+    React.useEffect(() => {
+        (async ()=>{
+            const user = await client.getUser();
+            setUser(user);
+            setDisplayName(user.displayName);
+            setUsername(user.username);
+            setEmail(user.email);
+        })();
+    },[]);
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
         const newErrors = accountValidator({username, password, email, displayName});
         setErrors(newErrors);
+        setSubmitting(true);
         if(newErrors.length > 0)
         {
+            setSubmitting(false);
             return;
         }
 
@@ -40,12 +53,16 @@ function Account()
             }
             setErrors(responseErrors);
         }
+        finally
+        {
+            setSubmitting(false);
+        }
 
     }
 
 
     return (<Container>
-        <h2 className="text-center">New Account Registration</h2>
+        <h2 className="text-center">Account settings</h2>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Row className="mb-3">
                 <FormField id="username" field={user.username} disabled label="Username" inputGroupPrefix="&#128100;"/>
@@ -67,7 +84,9 @@ function Account()
             </Row>):""}
             <Row>
                 <Col>
-                    <Button variant="primary" type="submit">Register</Button>
+                    <Button variant="primary" type="submit" disabled={submitting}>
+                        {submitting ? "Submitting..." : "Register"}
+                    </Button>
                 </Col>
             </Row>
         </Form>

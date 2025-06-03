@@ -15,28 +15,36 @@ class POILoader
      * A reference to the types of entry in the indexed db
      */
     static #types;
+    /**
+     * A promise to make sure the poi loader has loaded everything and is ready to serve query requests to the indexedDB
+     */
+    static #readyPromise;
 
-    static
-    {
-        const request = indexedDB.open("clochaDB", 1);
-        request.onerror = (evt)=>{
-            console.warn(evt);
-        }
-        request.onsuccess = async (evt)=>{
-            this.#db = evt.target.result;
-            this.#types = {};
-            await this.#syncIndexedDB();
-            await this.#getPOIFromIndexedDB({});
-        };
-        request.onupgradeneeded = (evt)=>{
-            this.#db = evt.target.result;
-            // the smrs for the site is unique. It will do as a keypath
-            const objectStore = this.#db.createObjectStore("sites", {keyPath:'smrs'});
-            objectStore.createIndex('county', 'county', {unique:false});
-            objectStore.createIndex('type', 'type', {unique:false});
-            objectStore.createIndex('type_and_county', ['type', 'county'], {unique:false});
-        }
+    static {
+        this.#readyPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open("clochaDB", 1);
+            request.onerror = (evt) => reject(evt);
+            request.onsuccess = async (evt) => {
+                this.#db = evt.target.result;
+                this.#types = {};
+                await this.#syncIndexedDB();
+                await this.#getPOIFromIndexedDB({});
+                resolve();
+            };
+            request.onupgradeneeded = (evt) => {
+                this.#db = evt.target.result;
+                if (!this.#db.objectStoreNames.contains("sites")) {
+                    const objectStore = this.#db.createObjectStore("sites", { keyPath: 'smrs' });
+                    objectStore.createIndex('county', 'county', { unique: false });
+                    objectStore.createIndex('type', 'type', { unique: false });
+                    objectStore.createIndex('type_and_county', ['type', 'county'], { unique: false });
+                }
+            };
+        });
+    }
 
+    static ready() {
+        return this.#readyPromise;
     }
 
 
@@ -48,7 +56,7 @@ class POILoader
 
     static async #getPOIFromIndexedDB({type, county})
     {
-        const transaction = this.#db.transaction(["sites"], 'readwrite');
+        const transaction = this.#db.transaction(["sites"], 'readonly');
         const objectStore = transaction.objectStore('sites');
 
         return new Promise(
@@ -61,11 +69,11 @@ class POILoader
                     {
                         POI = (results.filter(
                             (site)=> {
-                                if(type && !site.classdesc.matches)
+                                if(type && site.type !== type)
                                 {
                                     return false;
                                 }
-                                if(county && site.county !== county)
+                                else if(county && site.county !== county)
                                 {
                                     return false;
                                 }
@@ -78,9 +86,10 @@ class POILoader
                         POI = results;
                     }
                     const sites=[];
+                    const types = new Set();
                     for(let site of POI)
                     {
-                        this.#types[site.type] = site.type;
+                        types.add(site.type);
                         site.cluster = false;
                         sites.push({
                             type: 'Feature',
@@ -91,6 +100,7 @@ class POILoader
                             }
                         });
                     }
+                    this.#types = Array.from(types);
                     resolve(sites);
                 }
                 getAll.onerror = (evt)=>{
@@ -115,30 +125,33 @@ class POILoader
         return response.data.sites;
     }
 
-    static async #syncIndexedDB()
-    {
+    static async #syncIndexedDB() {
         const updatedSites = await this.#getUpdatedSites();
 
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject) => {
             const transaction = this.#db.transaction(["sites"], 'readwrite');
-            transaction.oncomplete = (evt) => {
-                resolve(evt);
-            };
-            transaction.onerror = (evt) => {
-                reject(evt);
-            }
+            transaction.oncomplete = (evt) => resolve(evt);
+            transaction.onerror = (evt) => reject(evt);
+
             const objectStore = transaction.objectStore('sites');
-            updatedSites.forEach((site)=>{
-                if(!site.type)
-                {
-                    site.type = site.classdesc;
+
+            (async () => {
+                try {
+                    for (const site of updatedSites) {
+                        if (!site.type) {
+                            site.type = site.classdesc;
+                        }
+                        await new Promise((res, rej) => {
+                            const req = objectStore.put(site);
+                            req.onsuccess = () => res();
+                            req.onerror = (e) => rej(e);
+                        });
+                    }
+                } catch (err) {
+                    transaction.abort();
+                    reject(err);
                 }
-                const request = objectStore.put(site);
-                request.onerror = (evt) => {
-                    reject(evt);
-                }
-            });
-            transaction.commit();
+            })();
         });
     }
 }

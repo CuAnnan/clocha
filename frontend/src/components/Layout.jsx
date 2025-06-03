@@ -5,9 +5,16 @@ import {client} from "../tools/AxiosInterceptor.js";
 
 function Layout()
 {
-    const loginData = localStorage.getItem("user");
-
     const userSections = [];
+    const [user, setUser] = React.useState({});
+    React.useEffect(() => {
+        (async ()=>{
+            setUser(await client.getUser());
+        })();
+    });
+
+
+
     //const linkSections = [];
 
     const logout = (e)=>{
@@ -16,9 +23,8 @@ function Layout()
         window.location.reload();
     }
 
-    if(loginData)
+    if(user)
     {
-        const user = JSON.parse(loginData);
         userSections.push(<Link to="/account"  className="nav-link"  key="2">Account</Link> );
         userSections.push(<Link to="#" key="1" className="nav-link" onClick={logout}>Logout ({user.username})</Link>);
     }

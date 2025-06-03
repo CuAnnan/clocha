@@ -10,6 +10,7 @@ class AxiosInterceptor
     #axiosInstance;
     #isRefreshing = false;
     #refreshSubscribers = [];
+    #ttl;
 
     constructor(config = {})
     {
@@ -114,8 +115,38 @@ class AxiosInterceptor
         localStorage.removeItem("user");
     }
 
-    get user()
-    {
+    async getUser() {
+        const now = Date.now();
+        const seconds = (now - this.#ttl) / 1000;
+
+        if (seconds > 3600) {
+            console.log("Trying a token refresh")
+            if (!this.#isRefreshing) {
+                this.#isRefreshing = true;
+
+                return this.refreshTokens()
+                    .then((newTokens) => {
+                        this.accessToken = newTokens.accessToken;
+                        this.refreshToken = newTokens.refreshToken;
+                        this.#isRefreshing = false;
+                        this.#ttl = Date.now();
+                        return JSON.parse(localStorage.getItem('user'));
+                    })
+                    .catch((error) => {
+                        this.clearTokens();
+                        this.#isRefreshing = false;
+                        throw error;
+                    });
+            }
+
+            // If already refreshing, return a promise that resolves when it's done
+            return new Promise((resolve) => {
+                this.#refreshSubscribers.push(() => {
+                    resolve(JSON.parse(localStorage.getItem('user')));
+                });
+            });
+        }
+
         return JSON.parse(localStorage.getItem('user'));
     }
 
@@ -166,7 +197,21 @@ class AxiosInterceptor
         }
 
         const response = await this.#axiosInstance.post("/users/refreshToken", {refreshToken});
+        this.#ttl = Date.now();
         return response.data; // Expecting { accessToken: string, refreshToken: string }
+    }
+
+    async login(username, password) {
+        const response = await this.#axiosInstance.post(
+            '/users/login',
+            { username, password },
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+        const { accessToken, refreshToken, user } = response.data;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.user = user;
+        return user;
     }
 }
 

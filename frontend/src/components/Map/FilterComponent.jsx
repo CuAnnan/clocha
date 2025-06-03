@@ -1,19 +1,28 @@
 import {Form, Col, Container, Row, FormSelect} from "react-bootstrap";
 import React from "react";
 
-function FilterComponent({siteTypes})
+function FilterComponent({siteTypes, typeFilters, setTypeFilters})
 {
     return (<Container fluid>
-        <h2>Filter search:</h2>
         <Form>
             <Form.Group as={Row} className="mb-3" controlId="filterType">
                 <Col>
-                    <FormSelect multiple>
+                    <Form.Control
+                        as="select"
+                        multiple
+                        value={typeFilters}
+                        onChange={
+                            e => {
+                                const filters = [].slice.call(e.target.selectedOptions).map(item => item.value);
+                                setTypeFilters(filters);
+                            }
+                        }
+                    >
                         <option value="">- Filter on type - </option>
-                        {Object.keys(siteTypes).sort().map((type, index)=>
+                        {siteTypes.map((type, index)=>
                             <option key={index} value={type}>{type}</option>
                         )}
-                    </FormSelect>
+                    </Form.Control>
                 </Col>
             </Form.Group>
         </Form>

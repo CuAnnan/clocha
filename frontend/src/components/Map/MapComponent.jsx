@@ -3,6 +3,8 @@ import useSupercluster from "use-supercluster";
 import React, { useEffect, useState } from "react";
 import Icon from "./Icon.jsx";
 import L from "leaflet";
+import LocationComponent from "./LocationComponent.jsx";
+
 
 import { useMap } from "react-leaflet";
 
@@ -24,6 +26,10 @@ function MapUpdater({ setBounds, setZoom }) {
             bounds.getNorthEast().lng,
             bounds.getNorthEast().lat,
         ]);
+        setZoom(map.getZoom());
+    });
+
+    useMapEvent("zoomend", () => {
         setZoom(map.getZoom());
     });
 
@@ -53,16 +59,16 @@ function MapComponent({ sites, setSite }) {
         options: { radius: 100, maxZoom: 20 },
     });
 
-    const icons = {};
+    const iconsRef = React.useRef({});
     const fetchIcon = (count, size) => {
-        if (!icons[count]) {
-            icons[count] = L.divIcon({
+        if (!iconsRef.current[count]) {
+            iconsRef.current[count] = L.divIcon({
                 html: `<div class="cluster-marker">${count}</div>`,
                 className: "cluster-icon",
                 iconSize: [size, size],
             });
         }
-        return icons[count];
+        return iconsRef.current[count];
     };
 
     return (
@@ -80,6 +86,7 @@ function MapComponent({ sites, setSite }) {
             {/* Set map instance */}
             <MapControl onMapReady={setMapInstance} />
             <MapUpdater setBounds={setBounds} setZoom={setZoom} />
+            <LocationComponent zoom={zoom}/>
 
             {clusters.map((cluster) => {
                 const [longitude, latitude] = cluster.geometry.coordinates;
@@ -94,6 +101,15 @@ function MapComponent({ sites, setSite }) {
                             key={`cluster-${cluster.id}`}
                             position={[latitude, longitude]}
                             icon={fetchIcon(pointCount, 30)}
+                            eventHandlers={{
+                                click: () => {
+                                    const expansionZoom = Math.min(
+                                        supercluster.getClusterExpansionZoom(cluster.id),
+                                        20
+                                    );
+                                    mapInstance.setView([latitude, longitude], expansionZoom);
+                                },
+                            }}
                         />
                     );
                 }
